@@ -2,116 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
-
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-  
-  .font-heading {
-    font-family: 'Playfair Display', serif;
-  }
-  
-  /* Glass morphism utility */
-  .glass {
-    @apply bg-white/30 dark:bg-black/30 backdrop-blur-md border border-white/20 dark:border-white/10;
-  }
-  
-  .glass-dark {
-    @apply bg-black/50 backdrop-blur-md border border-white/10;
-  }
-  
-  /* Animations */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  @keyframes shimmer {
-    0% {
-      background-position: -500px 0;
-    }
-    100% {
-      background-position: 500px 0;
-    }
-  }
-  
-  @keyframes subtleZoom {
-    0% {
-      transform: scale(1.05);
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1.05);
-    }
-  }
-  
-  @keyframes float {
-    0% {
-      transform: translateY(0px) translateX(0px);
-      opacity: 0;
-    }
-    50% {
-      opacity: 0.8;
-    }
-    100% {
-      transform: translateY(-100px) translateX(20px);
-      opacity: 0;
-    }
-  }
-  
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
-  }
-  
-  .animate-scale-in {
-    animation: scaleIn 0.5s ease-out forwards;
-  }
-  
-  .animate-shimmer {
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0) 40%);
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite linear;
-  }
-  
-  .animate-subtle-zoom {
-    animation: subtleZoom 20s infinite ease-in-out;
-  }
-  
-  .animate-float {
-    animation: float 10s infinite ease-in-out;
-  }
-  
-  .stagger-animation > *:nth-child(1) { animation-delay: 0s; }
-  .stagger-animation > *:nth-child(2) { animation-delay: 0.1s; }
-  .stagger-animation > *:nth-child(3) { animation-delay: 0.2s; }
-  .stagger-animation > *:nth-child(4) { animation-delay: 0.3s; }
-  .stagger-animation > *:nth-child(5) { animation-delay: 0.4s; }
-  .stagger-animation > *:nth-child(6) { animation-delay: 0.5s; }
 }
 
 @layer base {
@@ -193,9 +91,4 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
 }
