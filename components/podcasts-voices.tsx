@@ -47,13 +47,9 @@ export function PodcastsVoices() {
           <article className="mb-8">
             <Link href="#" className="flex gap-4 group">
               <div className="flex-shrink-0">
-                <Image
-                  src="/placeholder.svg?height=80&width=120"
-                  alt="Palestine article"
-                  width={120}
-                  height={80}
-                  className="object-cover"
-                />
+                <div className="w-20 h-20 bg-orange-100 rounded flex items-center justify-center">
+                  <div className="w-8 h-8 bg-orange-600 rounded-full"></div>
+                </div>
               </div>
               <div>
                 <p className="text-blue-600 text-sm font-medium mb-1">Voices</p>
@@ -68,13 +64,9 @@ export function PodcastsVoices() {
           <article>
             <Link href="#" className="flex gap-4 group">
               <div className="flex-shrink-0">
-                <Image
-                  src="/placeholder.svg?height=80&width=120"
-                  alt="Andor article"
-                  width={120}
-                  height={80}
-                  className="object-cover"
-                />
+                <div className="w-20 h-20 bg-green-100 rounded flex items-center justify-center">
+                  <div className="w-8 h-8 bg-green-600 rounded-full"></div>
+                </div>
               </div>
               <div>
                 <p className="text-blue-600 text-sm font-medium mb-1">Voices</p>

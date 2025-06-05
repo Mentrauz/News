@@ -1,5 +1,8 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { useNewsImage } from "@/hooks/use-news-images"
 
 interface Article {
   id: number
@@ -16,6 +19,33 @@ interface CategorySectionProps {
   articles: Article[]
 }
 
+function ArticleImage({ article, width, height, className }: { 
+  article: Article, 
+  width: number, 
+  height: number, 
+  className?: string 
+}) {
+  const { imageUrl, isLoading } = useNewsImage(article.title, article.category);
+  
+  return (
+    <div className="relative">
+      <Image
+        src={imageUrl}
+        alt={article.title}
+        width={width}
+        height={height}
+        className={className}
+        sizes={width > 400 ? "50vw" : "25vw"}
+      />
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+          <div className="text-xs text-gray-500">Loading...</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CategorySection({ title, articles }: CategorySectionProps) {
   const featuredArticle = articles.find((article) => article.featured)
   const regularArticles = articles.filter((article) => !article.featured)
@@ -30,9 +60,8 @@ export function CategorySection({ title, articles }: CategorySectionProps) {
             <article>
               <Link href="#" className="block group">
                 <div className="mb-6">
-                  <Image
-                    src={featuredArticle.image || "/placeholder.svg"}
-                    alt={featuredArticle.title}
+                  <ArticleImage 
+                    article={featuredArticle}
                     width={700}
                     height={400}
                     className="w-full object-cover"
@@ -58,9 +87,8 @@ export function CategorySection({ title, articles }: CategorySectionProps) {
               <article>
                 <Link href="#" className="flex gap-4 group">
                   <div className="flex-shrink-0">
-                    <Image
-                      src={article.image || "/placeholder.svg"}
-                      alt={article.title}
+                    <ArticleImage 
+                      article={article}
                       width={180}
                       height={120}
                       className="object-cover"

@@ -12,23 +12,25 @@ import { NewsletterSignup } from "@/components/newsletter-signup"
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
-      <header className="bg-white">
+      {/* Header with logo only */}
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4">
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-6 w-6" />
           </Button>
           <div className="flex-1 md:flex-none">
             <Link href="/" className="block">
-              <div className="text-2xl font-bold tracking-tight">
+              <div className="text-3xl font-bold tracking-tight font-serif">
                 <span className="text-black">Daily</span>
-                <br />
-                <span className="text-black">Pulse</span>
+                <span className="text-black ml-1">Pulse</span>
               </div>
             </Link>
           </div>
         </div>
-        <NavigationMenu />
       </header>
+
+      {/* Navigation menu as separate section */}
+      <NavigationMenu />
 
       <HeroSection />
 
@@ -61,7 +63,7 @@ const politicsArticles = [
     title: "PBS STATION WIPES DRAG AND TRANS CONTENT AFTER DOGE OUTCRY",
     excerpt: "",
     author: "Nikita Mazurov",
-    // image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-IWdXIaaw4UbqFO33j68q9sJ0CQgKip.png",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-IWdXIaaw4UbqFO33j68q9sJ0CQgKip.png",
     category: "Politics",
     featured: true,
   },
@@ -70,7 +72,7 @@ const politicsArticles = [
     title: "Trump Finds a New Way to Attack Education: Cutting Aid for Students Who Are Parents",
     excerpt: "",
     author: "Jessica Washington",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Politics",
   },
   {
@@ -78,7 +80,7 @@ const politicsArticles = [
     title: "Columbia Trustee Got Sued for Securities Fraud — Then Left Her Pharma Firm Under a Cloud",
     excerpt: "",
     author: "Meghnad Bose, Lara-Nour Walton",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Chilling Dissent",
   },
   {
@@ -86,7 +88,7 @@ const politicsArticles = [
     title: "Atlanta Suburb Repeals Law Forcing Protesters to Obtain Consent of Anyone Within 8 Feet",
     excerpt: "",
     author: "Aja Arnold",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Chilling Dissent",
   },
 ]
@@ -97,7 +99,7 @@ const justiceArticles = [
     title: "Trump Is Coming for Chinese Students. Who Will Protect Them?",
     excerpt: "",
     author: "Akela Lacy",
-    // image: "/placeholder.svg?height=300&width=500",
+    image: "/placeholder.svg?height=300&width=500",
     category: "The War on Immigrants",
     featured: true,
   },
@@ -106,7 +108,7 @@ const justiceArticles = [
     title: 'Pro-Trump 2020 "Stop the Steal" Attorney Faces Disbarment',
     excerpt: "",
     author: "Akela Lacy",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Justice",
   },
 ]
@@ -117,7 +119,7 @@ const nationalSecurityArticles = [
     title: 'U.S. CONDUCTS "LARGEST AIRSTRIKE IN THE HISTORY OF THE WORLD" (SORT OF)',
     excerpt: "",
     author: "Nick Turse",
-    // image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-TCCJcreMz9a0wT6ZA5wNaDSpM4xEaH.png",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-TCCJcreMz9a0wT6ZA5wNaDSpM4xEaH.png",
     category: "National Security",
     featured: true,
   },
@@ -126,7 +128,7 @@ const nationalSecurityArticles = [
     title: 'Trump Said Syria Deserves a "Fresh Start" — But U.S. Troops Aren\'t Leaving',
     excerpt: "",
     author: "Nick Turse",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "National Security",
   },
   {
@@ -134,7 +136,7 @@ const nationalSecurityArticles = [
     title: "Trump Army Appointee Should Sell His Anduril Stock, Sen. Warren Demands",
     excerpt: "",
     author: "Sam Biddle",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "National Security",
   },
   {
@@ -142,7 +144,7 @@ const nationalSecurityArticles = [
     title: "More Troops Injured as U.S. Planes Keep Plunging Into Red Sea",
     excerpt: "",
     author: "Nick Turse",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "National Security",
   },
 ]
@@ -153,7 +155,7 @@ const technologyArticles = [
     title: 'MICROSOFT SAYS IT\'S CENSORING EMPLOYEE EMAILS CONTAINING THE WORD "PALESTINE"',
     excerpt: "",
     author: "Sam Biddle",
-    // image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-e4bIaoYp6In2IfOoa94mjxU5oop7IM.png",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-e4bIaoYp6In2IfOoa94mjxU5oop7IM.png",
     category: "Technology",
     featured: true,
   },
@@ -162,7 +164,7 @@ const technologyArticles = [
     title: "U.S. Spy Agencies Are Getting a One-Stop Shop to Buy Your Most Sensitive Personal Data",
     excerpt: "",
     author: "Sam Biddle",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Technology",
   },
   {
@@ -170,7 +172,7 @@ const technologyArticles = [
     title: "Senate Dems Hand Trump a Win by Backing Stablecoin Bill",
     excerpt: "",
     author: "Matt Sledge",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Technology",
   },
   {
@@ -178,7 +180,7 @@ const technologyArticles = [
     title: "Google Worried It Couldn't Control How Israel Uses Project Nimbus, Files Reveal",
     excerpt: "",
     author: "Sam Biddle",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Israel's War on Gaza",
   },
 ]
@@ -189,7 +191,7 @@ const environmentArticles = [
     title: '"INTENSE CULTURE OF FEAR": BEHIND THE SCENES AS TRUMP DESTROYS THE EPA FROM WITHIN',
     excerpt: "",
     author: "Akela Lacy",
-    // image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VOjcLECEpKfqaMVFcpjS37AmhhVaFC.png",
+    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-VOjcLECEpKfqaMVFcpjS37AmhhVaFC.png",
     category: "Environment",
     featured: true,
   },
@@ -198,7 +200,7 @@ const environmentArticles = [
     title: "Trump EPA's Next Move: Making It Harder to Sue for Getting Cancer from Roundup",
     excerpt: "",
     author: "Schuyler Mitchell",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Environment",
   },
   {
@@ -206,7 +208,7 @@ const environmentArticles = [
     title: "Trump's EPA Kills Grant to Climate Nonprofit Over Its Support for Palestine",
     excerpt: "",
     author: "Akela Lacy",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Israel's War on Gaza",
   },
   {
@@ -214,7 +216,7 @@ const environmentArticles = [
     title: "Which LA Fire Victims Get Money on GoFundMe — and Who Gets Left Out?",
     excerpt: "",
     author: "Jonah Valdez",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Environment",
   },
 ]
@@ -225,7 +227,7 @@ const worldArticles = [
     title: 'How Trump\'s Embrace of Afrikaner "Refugees" Became a Joke in South Africa',
     excerpt: "",
     author: "Sisonke Msimang",
-    // image: "/placeholder.svg?height=300&width=500",
+    image: "/placeholder.svg?height=300&width=500",
     category: "Voices",
     featured: true,
   },
@@ -234,7 +236,7 @@ const worldArticles = [
     title: "Audio Analysis: Eurovision Broadcast Censored Pro-Palestinian Protest",
     excerpt: "",
     author: "Akela Lacy",
-    // image: "/placeholder.svg?height=100&width=150",
+    image: "/placeholder.svg?height=100&width=150",
     category: "Chilling Dissent",
   },
 ]

@@ -1,23 +1,35 @@
+"use client"
+
 import Image from "next/image"
+import { useNewsImage } from "@/hooks/use-news-images"
 
 export function HeroSection() {
+  const heroHeadline = "HOW THE FBI AND BIG AG STARTED TREATING ANIMAL RIGHTS ACTIVISTS AS TERRORISTS";
+  const { imageUrl, isLoading } = useNewsImage(heroHeadline, "Justice");
+
   return (
     <section className="relative">
-      <div className="relative h-[600px] w-full">
+      <div className="relative h-[500px] w-full">
         <Image
-          // src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-4LAuNZjDc3V0sN5kSkxauQQvHLXTf7.png"
-          alt="Korean protesters with flags"
+          src={imageUrl}
+          alt="Animal rights protesters with signs"
           fill
           className="object-cover"
           priority
+          sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+        {isLoading && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+            <div className="text-gray-500">Loading image...</div>
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20">
           <div className="absolute bottom-0 left-0 right-0 p-8">
             <div className="max-w-7xl mx-auto">
-              <h1 className="text-5xl md:text-6xl font-bold text-white max-w-4xl leading-tight mb-4">
-                HOW THE KOREAN RIGHT TURNED MAGA AHEAD OF TOMORROW'S ELECTION
+              <h1 className="text-4xl md:text-5xl font-bold text-white max-w-4xl leading-tight mb-4">
+                {heroHeadline}
               </h1>
-              <p className="text-blue-400 text-lg font-medium">Janet Lie</p>
+              <p className="text-blue-400 text-base font-medium">Matt Sledge</p>
             </div>
           </div>
         </div>

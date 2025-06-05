@@ -13,15 +13,17 @@ export function NavigationMenu() {
   ]
 
   return (
-    <nav className="border-t border-gray-200 hidden md:block">
+    <nav className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto">
-        <ul className="flex">
+        <ul className="flex items-center">
           {menuItems.map((item) => (
             <li key={item.label}>
               <Link
                 href={item.href}
-                className={`block px-4 py-3 text-sm font-semibold tracking-wide hover:bg-gray-50 transition-colors ${
-                  item.highlight ? "bg-indigo-600 text-white hover:bg-indigo-700" : "text-gray-900"
+                className={`block px-6 py-4 text-sm font-bold tracking-wide hover:bg-gray-50 transition-colors ${
+                  item.highlight 
+                    ? "bg-blue-600 text-white hover:bg-blue-700 mx-2" 
+                    : "text-gray-900 hover:text-gray-700"
                 }`}
               >
                 {item.label}
