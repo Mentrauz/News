@@ -2,9 +2,15 @@
 
 import Image from "next/image"
 import { useNewsImage } from "@/hooks/use-news-images"
+import { useNews } from "@/hooks/use-news"
 
 export function HeroSection() {
-  const heroHeadline = "HOW THE FBI AND BIG AG STARTED TREATING ANIMAL RIGHTS ACTIVISTS AS TERRORISTS";
+  const { news } = useNews();
+  
+  // Use first top story or fallback to default
+  const heroHeadline = news.topStories[0]?.title || "HOW THE FBI AND BIG AG STARTED TREATING ANIMAL RIGHTS ACTIVISTS AS TERRORISTS";
+  const heroAuthor = news.topStories[0]?.author || "Matt Sledge";
+  
   const { imageUrl, isLoading } = useNewsImage(heroHeadline, "Justice");
 
   return (
@@ -29,7 +35,7 @@ export function HeroSection() {
               <h1 className="text-4xl md:text-5xl font-bold text-white max-w-4xl leading-tight mb-4">
                 {heroHeadline}
               </h1>
-              <p className="text-blue-400 text-base font-medium">Matt Sledge</p>
+              <p className="text-blue-400 text-base font-medium">{heroAuthor}</p>
             </div>
           </div>
         </div>

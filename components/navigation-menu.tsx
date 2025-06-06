@@ -20,10 +20,10 @@ export function NavigationMenu() {
             <li key={item.label}>
               <Link
                 href={item.href}
-                className={`block px-6 py-4 text-sm font-bold tracking-wide hover:bg-gray-50 transition-colors ${
+                className={`block px-6 py-4 text-sm font-bold tracking-wide transition-colors ${
                   item.highlight 
-                    ? "bg-blue-600 text-white hover:bg-blue-700 mx-2" 
-                    : "text-gray-900 hover:text-gray-700"
+                    ? "bg-blue-600 text-white hover:bg-white hover:text-black mx-2" 
+                    : "text-gray-900 hover:bg-gray-50 hover:text-gray-700"
                 }`}
               >
                 {item.label}

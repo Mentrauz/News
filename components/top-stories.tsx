@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useNewsImage } from "@/hooks/use-news-images"
+import { useNews } from "@/hooks/use-news"
 
 function TopStoryImage({ headline, category, width, height, className }: {
   headline: string,
@@ -22,6 +23,7 @@ function TopStoryImage({ headline, category, width, height, className }: {
         height={height}
         className={className}
         sizes={width > 400 ? "33vw" : "25vw"}
+        priority={true} // Load these images with high priority since they're above the fold
       />
       {isLoading && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
@@ -33,8 +35,25 @@ function TopStoryImage({ headline, category, width, height, className }: {
 }
 
 export function TopStories() {
-  const koreanElectionHeadline = "HOW THE KOREAN RIGHT TURNED MAGA AHEAD OF TOMORROW'S ELECTION";
-  const marcoRubioHeadline = "Marco Rubio Is Attacking American Education. International Students Are His Pawns.";
+  const { news, error } = useNews();
+  
+  // Use first available headlines or fallback to defaults
+  const mainHeadline = news.topStories[0]?.title || "HOW THE KOREAN RIGHT TURNED MAGA AHEAD OF TOMORROW'S ELECTION";
+  const voicesHeadline = news.topStories[1]?.title || "Marco Rubio Is Attacking American Education. International Students Are His Pawns.";
+  const mainAuthor = news.topStories[0]?.author || "Janet Lie";
+  const voicesAuthor = news.topStories[1]?.author || "Natasha Lennard";
+  const mainDescription = news.topStories[0]?.description || "As South Korea heads toward a snap presidential election on June 3, the far right is following the Trump playbook (and aesthetic).";
+
+  if (error) {
+    return (
+      <section className="py-12">
+        <h2 className="text-5xl font-bold mb-12 text-black">Top Stories</h2>
+        <div className="text-center py-8">
+          <p className="text-red-600">Error loading stories: {error}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12">
@@ -47,7 +66,7 @@ export function TopStories() {
             <Link href="#" className="block group">
               <div className="mb-6">
                 <TopStoryImage
-                  headline={koreanElectionHeadline}
+                  headline={mainHeadline}
                   category="Politics"
                   width={500}
                   height={600}
@@ -63,11 +82,11 @@ export function TopStories() {
           <article>
             <div className="border-t-4 border-black pt-6">
               <h3 className="text-3xl font-bold mb-3 text-black hover:text-gray-700 transition-colors">
-                {koreanElectionHeadline}
+                {mainHeadline}
               </h3>
-              <p className="text-blue-600 text-sm font-medium mb-3">Janet Lie</p>
+              <p className="text-blue-600 text-sm font-medium mb-3">{mainAuthor}</p>
               <p className="text-gray-700 text-lg leading-relaxed">
-                As South Korea heads toward a snap presidential election on June 3, the far right is following the Trump playbook (and aesthetic).
+                {mainDescription}
               </p>
             </div>
           </article>
@@ -82,7 +101,7 @@ export function TopStories() {
               <Link href="#" className="flex gap-4 group">
                 <div className="flex-shrink-0">
                   <TopStoryImage
-                    headline={marcoRubioHeadline}
+                    headline={voicesHeadline}
                     category="Voices"
                     width={120}
                     height={80}
@@ -91,9 +110,9 @@ export function TopStories() {
                 </div>
                 <div>
                   <h4 className="font-bold text-lg mb-2 group-hover:text-gray-700 transition-colors">
-                    {marcoRubioHeadline}
+                    {voicesHeadline}
                   </h4>
-                  <p className="text-blue-600 text-sm font-medium">Natasha Lennard</p>
+                  <p className="text-blue-600 text-sm font-medium">{voicesAuthor}</p>
                 </div>
               </Link>
             </article>
