@@ -1,6 +1,30 @@
 const NEWS_API_KEY = 'd46d7da9a855434fbf076cead7c797cc';
 const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
 
+// Simple cache to reduce API calls and handle rate limits
+const newsCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
+
+// Check if cached data is still valid
+function isCacheValid(timestamp: number): boolean {
+  return Date.now() - timestamp < CACHE_DURATION;
+}
+
+// Get cached data if available and valid
+function getCachedData(cacheKey: string): any | null {
+  const cached = newsCache.get(cacheKey);
+  if (cached && isCacheValid(cached.timestamp)) {
+    console.log(`📦 Using cached data for: ${cacheKey}`);
+    return cached.data;
+  }
+  return null;
+}
+
+// Set data in cache
+function setCacheData(cacheKey: string, data: any): void {
+  newsCache.set(cacheKey, { data, timestamp: Date.now() });
+}
+
 /**
  * Clean author name by extracting first contributor and removing suffixes
  */
@@ -66,6 +90,13 @@ export async function fetchTopHeadlines(
   country: string = 'us',
   pageSize: number = 20
 ): Promise<NewsArticle[]> {
+  // Check cache first
+  const cacheKey = `headlines_${category}_${country}_${pageSize}`;
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
   try {
     const categoryParam = category ? NEWS_CATEGORIES[category] : 'general';
     const response = await fetch(
@@ -73,17 +104,26 @@ export async function fetchTopHeadlines(
     );
 
     if (!response.ok) {
+      if (response.status === 429) {
+        console.warn('⚠️ NewsAPI rate limit reached for headlines. Using cached data or fallback.');
+        return [];
+      }
       throw new Error(`NewsAPI error: ${response.status}`);
     }
 
     const data: NewsApiResponse = await response.json();
     
-    return data.articles.map((article, index) => ({
+    const articles = data.articles.map((article, index) => ({
       ...article,
       id: `${article.source.id}-${index}`,
       category: category || 'General',
       author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author'
     }));
+
+    // Cache the successful response
+    setCacheData(cacheKey, articles);
+    
+    return articles;
   } catch (error) {
     console.error('Error fetching news from NewsAPI:', error);
     return [];
@@ -99,22 +139,39 @@ export async function searchNews(
   pageSize: number = 20,
   language: string = 'en'
 ): Promise<NewsArticle[]> {
+  // Check cache first
+  const cacheKey = `search_${query}_${sortBy}_${pageSize}`;
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
   try {
     const response = await fetch(
       `${NEWS_API_BASE_URL}/everything?q=${encodeURIComponent(query)}&sortBy=${sortBy}&pageSize=${pageSize}&language=${language}&apiKey=${NEWS_API_KEY}`
     );
 
     if (!response.ok) {
+      if (response.status === 429) {
+        console.warn('⚠️ NewsAPI rate limit reached. Using cached data or fallback.');
+        // Return empty array if no cached data available
+        return [];
+      }
       throw new Error(`NewsAPI error: ${response.status}`);
     }
 
     const data: NewsApiResponse = await response.json();
     
-    return data.articles.map((article, index) => ({
+    const articles = data.articles.map((article, index) => ({
       ...article,
       id: `search-${index}`,
       author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author'
     }));
+
+    // Cache the successful response
+    setCacheData(cacheKey, articles);
+    
+    return articles;
   } catch (error) {
     console.error('Error searching news:', error);
     return [];
@@ -131,7 +188,7 @@ export async function fetchNewsByTopic(topic: string, pageSize: number = 10): Pr
     'National Security': 'national security OR defense OR military OR surveillance',
     'Technology': 'technology OR tech OR AI OR artificial intelligence OR software',
     'Environment': 'environment OR climate OR green energy OR pollution',
-    'World': 'international OR global OR foreign OR world news'
+    'World': '(international AND politics) OR (global AND news) OR (foreign AND policy) OR (diplomatic AND relations) OR (ukraine OR china OR europe OR asia OR africa OR "middle east") -bulletin -"world service"'
   };
 
   // Major news sources to prioritize
