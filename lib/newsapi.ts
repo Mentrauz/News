@@ -3,7 +3,7 @@ const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
 
 // Simple cache to reduce API calls and handle rate limits
 const newsCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
+const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours cache (was 10 minutes)
 
 // Check if cached data is still valid
 function isCacheValid(timestamp: number): boolean {
@@ -23,6 +23,22 @@ function getCachedData(cacheKey: string): any | null {
 // Set data in cache
 function setCacheData(cacheKey: string, data: any): void {
   newsCache.set(cacheKey, { data, timestamp: Date.now() });
+  console.log(`💾 Cached data for: ${cacheKey}`);
+}
+
+// Enhanced rate limit handling
+function handleRateLimitError(cacheKey: string): any[] {
+  console.warn('⚠️ NewsAPI rate limit reached. Checking for any cached data...');
+  
+  // Try to get cached data even if expired as fallback
+  const cached = newsCache.get(cacheKey);
+  if (cached) {
+    console.log(`📦 Using expired cached data as fallback for: ${cacheKey}`);
+    return cached.data;
+  }
+  
+  console.log(`❌ No cached data available for: ${cacheKey}`);
+  return [];
 }
 
 /**
@@ -105,8 +121,7 @@ export async function fetchTopHeadlines(
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.warn('⚠️ NewsAPI rate limit reached for headlines. Using cached data or fallback.');
-        return [];
+        return handleRateLimitError(cacheKey);
       }
       throw new Error(`NewsAPI error: ${response.status}`);
     }
@@ -126,7 +141,7 @@ export async function fetchTopHeadlines(
     return articles;
   } catch (error) {
     console.error('Error fetching news from NewsAPI:', error);
-    return [];
+    return handleRateLimitError(cacheKey);
   }
 }
 
@@ -153,9 +168,7 @@ export async function searchNews(
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.warn('⚠️ NewsAPI rate limit reached. Using cached data or fallback.');
-        // Return empty array if no cached data available
-        return [];
+        return handleRateLimitError(cacheKey);
       }
       throw new Error(`NewsAPI error: ${response.status}`);
     }
@@ -174,7 +187,7 @@ export async function searchNews(
     return articles;
   } catch (error) {
     console.error('Error searching news:', error);
-    return [];
+    return handleRateLimitError(cacheKey);
   }
 }
 
@@ -191,36 +204,21 @@ export async function fetchNewsByTopic(topic: string, pageSize: number = 10): Pr
     'World': '(international AND politics) OR (global AND news) OR (foreign AND policy) OR (diplomatic AND relations) OR (ukraine OR china OR europe OR asia OR africa OR "middle east") -bulletin -"world service"'
   };
 
-  // Major news sources to prioritize
-  const majorSources = [
-    'bbc-news', 'cnn', 'reuters', 'associated-press', 'the-washington-post',
-    'the-new-york-times', 'the-guardian-uk', 'abc-news', 'fox-news',
-    'nbc-news', 'cbs-news', 'usa-today', 'time', 'newsweek'
-  ];
-
   const query = topicQueries[topic as keyof typeof topicQueries] || topic;
   
   try {
-    // Fetch from multiple sources
-    const articlesFromSources = await searchNewsFromSources(query, majorSources.slice(0, 8), pageSize);
-    const generalArticles = await searchNews(query, 'relevancy', Math.max(5, pageSize - articlesFromSources.length));
+    // Use only ONE API call instead of two to reduce request count
+    // Prioritize recent, relevant articles
+    const articles = await searchNews(query, 'publishedAt', pageSize);
     
-    // Combine and deduplicate
-    const allArticles = [...articlesFromSources, ...generalArticles];
-    const uniqueArticles = deduplicateArticles(allArticles);
-    
-    return uniqueArticles.slice(0, pageSize).map(article => ({
+    return articles.map(article => ({
       ...article,
       category: topic
     }));
   } catch (error) {
     console.error(`Error fetching ${topic} news:`, error);
-    // Fallback to regular search
-    const articles = await searchNews(query, 'relevancy', pageSize);
-    return articles.map(article => ({
-      ...article,
-      category: topic
-    }));
+    // Return empty array instead of making another API call
+    return [];
   }
 }
 
