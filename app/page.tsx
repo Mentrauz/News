@@ -27,9 +27,9 @@ function convertToLegacyFormat(articles: any[]) {
 }
 
 export default function Home() {
-  const { news, isLoading } = useNews();
+  const { news, isLoading, isRateLimited } = useNews();
 
-  console.log('🏠 Home component - isLoading:', isLoading);
+  console.log('🏠 Home component - isLoading:', isLoading, 'isRateLimited:', isRateLimited);
 
   // Show loading screen while data is being fetched
   if (isLoading) {
@@ -41,7 +41,6 @@ export default function Home() {
   
   // Check if we have minimal content (possible rate limit issue)
   const totalArticles = Object.values(news).flat().length;
-  const isRateLimited = totalArticles === 0;
 
   return (
     <main className="min-h-screen bg-white">

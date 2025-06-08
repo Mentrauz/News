@@ -1,13 +1,19 @@
 const NEWS_API_KEY = 'd46d7da9a855434fbf076cead7c797cc';
 const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
 
-// Simple cache to reduce API calls and handle rate limits
-const newsCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours cache (was 10 minutes)
+// Enhanced cache to work better with serverless environments
+const newsCache = new Map<string, { data: any; timestamp: number; etag?: string }>();
+const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours cache
+const RATE_LIMIT_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours for rate limited data
+
+// Global request counter to track API usage
+let requestCount = 0;
+const MAX_REQUESTS_PER_DEPLOYMENT = 50; // Conservative limit per deployment instance
 
 // Check if cached data is still valid
-function isCacheValid(timestamp: number): boolean {
-  return Date.now() - timestamp < CACHE_DURATION;
+function isCacheValid(timestamp: number, isRateLimited: boolean = false): boolean {
+  const duration = isRateLimited ? RATE_LIMIT_CACHE_DURATION : CACHE_DURATION;
+  return Date.now() - timestamp < duration;
 }
 
 // Get cached data if available and valid
@@ -17,28 +23,50 @@ function getCachedData(cacheKey: string): any | null {
     console.log(`📦 Using cached data for: ${cacheKey}`);
     return cached.data;
   }
+  
+  // Also check if we have rate-limited data that's still usable
+  if (cached && isCacheValid(cached.timestamp, true)) {
+    console.log(`📦 Using rate-limited cached data for: ${cacheKey}`);
+    return cached.data;
+  }
+  
   return null;
 }
 
-// Set data in cache
-function setCacheData(cacheKey: string, data: any): void {
-  newsCache.set(cacheKey, { data, timestamp: Date.now() });
-  console.log(`💾 Cached data for: ${cacheKey}`);
+// Set data in cache with enhanced metadata
+function setCacheData(cacheKey: string, data: any, isRateLimited: boolean = false): void {
+  newsCache.set(cacheKey, { 
+    data, 
+    timestamp: Date.now(),
+    etag: `${Date.now()}-${data.length || 0}` 
+  });
+  console.log(`💾 Cached data for: ${cacheKey} ${isRateLimited ? '(rate-limited)' : ''}`);
 }
 
 // Enhanced rate limit handling
 function handleRateLimitError(cacheKey: string): any[] {
   console.warn('⚠️ NewsAPI rate limit reached. Checking for any cached data...');
   
-  // Try to get cached data even if expired as fallback
+  // Try to get any cached data, even if expired, as fallback
   const cached = newsCache.get(cacheKey);
   if (cached) {
     console.log(`📦 Using expired cached data as fallback for: ${cacheKey}`);
+    // Update timestamp to extend the cache for rate-limited scenarios
+    setCacheData(cacheKey, cached.data, true);
     return cached.data;
   }
   
   console.log(`❌ No cached data available for: ${cacheKey}`);
   return [];
+}
+
+// Check if we should make API request based on rate limiting
+function shouldMakeApiRequest(): boolean {
+  if (requestCount >= MAX_REQUESTS_PER_DEPLOYMENT) {
+    console.warn(`🛑 Reached deployment request limit (${requestCount}/${MAX_REQUESTS_PER_DEPLOYMENT})`);
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -75,7 +103,7 @@ export interface NewsArticle {
     name: string;
   };
   category?: string;
-  featured?: boolean;
+  featured: boolean;
 }
 
 export interface NewsApiResponse {
@@ -113,7 +141,15 @@ export async function fetchTopHeadlines(
     return cachedData;
   }
 
+  // Check if we should make API request
+  if (!shouldMakeApiRequest()) {
+    return handleRateLimitError(cacheKey);
+  }
+
   try {
+    requestCount++; // Increment request counter
+    console.log(`📊 API Request ${requestCount}/${MAX_REQUESTS_PER_DEPLOYMENT}: ${cacheKey}`);
+    
     const categoryParam = category ? NEWS_CATEGORIES[category] : 'general';
     const response = await fetch(
       `${NEWS_API_BASE_URL}/top-headlines?country=${country}&category=${categoryParam}&pageSize=${pageSize}&apiKey=${NEWS_API_KEY}`
@@ -132,7 +168,8 @@ export async function fetchTopHeadlines(
       ...article,
       id: `${article.source.id}-${index}`,
       category: category || 'General',
-      author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author'
+      author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author',
+      featured: false
     }));
 
     // Cache the successful response
@@ -161,7 +198,15 @@ export async function searchNews(
     return cachedData;
   }
 
+  // Check if we should make API request
+  if (!shouldMakeApiRequest()) {
+    return handleRateLimitError(cacheKey);
+  }
+
   try {
+    requestCount++; // Increment request counter
+    console.log(`📊 API Request ${requestCount}/${MAX_REQUESTS_PER_DEPLOYMENT}: ${cacheKey}`);
+    
     const response = await fetch(
       `${NEWS_API_BASE_URL}/everything?q=${encodeURIComponent(query)}&sortBy=${sortBy}&pageSize=${pageSize}&language=${language}&apiKey=${NEWS_API_KEY}`
     );
@@ -178,7 +223,8 @@ export async function searchNews(
     const articles = data.articles.map((article, index) => ({
       ...article,
       id: `search-${index}`,
-      author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author'
+      author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author',
+      featured: false
     }));
 
     // Cache the successful response
@@ -245,7 +291,8 @@ export async function searchNewsFromSources(
     return data.articles.map((article, index) => ({
       ...article,
       id: `source-${index}`,
-      author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author'
+      author: cleanAuthorName(article.author) || article.source.name || 'Unknown Author',
+      featured: false
     }));
   } catch (error) {
     console.error('Error searching news from sources:', error);
