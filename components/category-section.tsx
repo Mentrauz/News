@@ -25,41 +25,40 @@ function ArticleImage({ article, width, height, className }: {
   height: number, 
   className?: string 
 }) {
-  // First try to use the NewsAPI image, fallback to Unsplash only if needed
-  const shouldUseFallback = !article.image || 
-    article.image.includes('placeholder') || 
-    article.image === '/placeholder-small.svg' ||
-    article.image === '/placeholder-news.svg';
-    
+  // Always use high-quality Unsplash images for better quality
   const { imageUrl: unsplashUrl, isLoading } = useNewsImage(
     article.title, 
     article.category, 
-    { enabled: shouldUseFallback }
+    { enabled: true, fallbackImage: '/placeholder-news.svg' }
   );
   
-  // Use NewsAPI image if available, otherwise use Unsplash
-  const finalImageUrl = shouldUseFallback ? unsplashUrl : article.image;
+  // Always use Unsplash for high-quality images
+  const finalImageUrl = unsplashUrl;
   
   return (
-    <div className="image-container">
+    <div className="relative w-full h-full overflow-hidden bg-gray-100">
       <Image
         src={finalImageUrl}
         alt={article.title}
-        width={width}
-        height={height}
-        className={`${className} news-image`}
+        fill
+        className="object-cover object-center"
         sizes={width > 400 ? "50vw" : "25vw"}
+        style={{
+          objectFit: 'cover',
+          objectPosition: 'center center'
+        }}
         onError={(e) => {
-          // If NewsAPI image fails, try Unsplash as fallback
-          if (!shouldUseFallback) {
-            console.warn(`NewsAPI image failed for "${article.title}", falling back to Unsplash`);
-            // This would require a state update to trigger Unsplash fetch
-          }
+          // Set a solid background while image loads
+          e.currentTarget.style.backgroundColor = '#e5e7eb';
+        }}
+        onLoad={(e) => {
+          // Remove background once image loads
+          e.currentTarget.style.backgroundColor = 'transparent';
         }}
       />
-      {isLoading && shouldUseFallback && (
+      {isLoading && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-          <div className="text-xs text-gray-500">Loading...</div>
+          <div className="text-xs text-gray-500">Loading HD image...</div>
         </div>
       )}
     </div>
@@ -103,22 +102,22 @@ export function CategorySection({ title, articles }: CategorySectionProps) {
           </div>
         )}
 
-        <div className="space-y-8">
+        <div className="article-list">
           {regularArticles.map((article, index) => (
             <div key={article.id} className="border-t-4 border-black pt-4">
               <article>
-                <Link href="#" className="flex gap-4 group">
+                <Link href="#" className="article-item group">
                   <div className="flex-shrink-0">
-                    <div className="aspect-news-thumb w-[180px] h-[120px]">
+                    <div className="news-thumbnail-container">
                       <ArticleImage 
                         article={article}
                         width={180}
                         height={120}
-                        className="w-full h-full"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
-                  <div>
+                  <div className="article-content">
                     {article.category && article.category !== title && (
                       <p className="text-blue-600 text-sm font-medium mb-1">{article.category}</p>
                     )}

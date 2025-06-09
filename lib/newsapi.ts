@@ -1,5 +1,10 @@
-const NEWS_API_KEY = 'd46d7da9a855434fbf076cead7c797cc';
+const NEWS_API_KEY = process.env.NEWSAPI_KEY;
 const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
+
+// Validate API key is available
+if (!NEWS_API_KEY) {
+  throw new Error('NEWSAPI_KEY environment variable is not set');
+}
 
 // Enhanced cache to work better with serverless environments
 const newsCache = new Map<string, { data: any; timestamp: number; etag?: string }>();

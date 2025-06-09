@@ -5,38 +5,47 @@ import Link from "next/link"
 import { useNewsImage } from "@/hooks/use-news-images"
 import { useNews } from "@/hooks/use-news"
 
-function TopStoryImage({ headline, category, newsApiImage, width, height, className }: {
+function TopStoryImage({ headline, category, width, height, className }: {
   headline: string,
   category?: string,
-  newsApiImage?: string,
   width: number,
   height: number,
   className?: string
 }) {
-  // Use NewsAPI image if available, fallback to Unsplash
-  const shouldUseFallback = !newsApiImage || newsApiImage.includes('placeholder');
+  // Always use high-quality Unsplash images
   const { imageUrl: unsplashUrl, isLoading } = useNewsImage(
     headline, 
     category, 
-    { enabled: shouldUseFallback }
+    { enabled: true, fallbackImage: '/placeholder-news.svg' }
   );
   
-  const finalImageUrl = shouldUseFallback ? unsplashUrl : newsApiImage;
+  const finalImageUrl = unsplashUrl;
   
   return (
-    <div className="image-container">
+    <div className="relative w-full h-full overflow-hidden bg-gray-100">
       <Image
         src={finalImageUrl}
         alt={headline}
-        width={width}
-        height={height}
-        className={`${className} news-image`}
+        fill
+        className="object-cover object-center"
         sizes={width > 400 ? "33vw" : "25vw"}
+        style={{
+          objectFit: 'cover',
+          objectPosition: 'center center'
+        }}
         priority={true} // Load these images with high priority since they're above the fold
+        onError={(e) => {
+          // Set a solid background while fallback loads
+          e.currentTarget.style.backgroundColor = '#e5e7eb';
+        }}
+        onLoad={(e) => {
+          // Remove background once image loads
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
       />
-      {isLoading && shouldUseFallback && (
+      {isLoading && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-          <div className="text-xs text-gray-500">Loading...</div>
+          <div className="text-xs text-gray-500">Loading HD image...</div>
         </div>
       )}
     </div>
@@ -83,7 +92,6 @@ export function TopStories() {
                   <TopStoryImage
                     headline={mainHeadline}
                     category="Politics"
-                    newsApiImage={mainImage}
                     width={500}
                     height={600}
                     className="w-full h-full"
@@ -115,20 +123,19 @@ export function TopStories() {
             <h3 className="text-2xl font-bold mb-6 text-black">Voices</h3>
             
             <article className="mb-8">
-              <Link href="#" className="flex gap-4 group">
+              <Link href="#" className="article-item group">
                 <div className="flex-shrink-0">
-                  <div className="aspect-news-thumb w-[120px] h-[80px]">
+                  <div className="w-[120px] h-[80px] flex-shrink-0 overflow-hidden rounded-sm bg-gray-100">
                     <TopStoryImage
                       headline={voicesHeadline}
                       category="Voices"
-                      newsApiImage={voicesImage}
                       width={120}
                       height={80}
-                      className="w-full h-full"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </div>
-                <div>
+                <div className="article-content">
                   <h4 className="font-bold text-lg mb-2 group-hover:text-gray-700 transition-colors">
                     {voicesHeadline}
                   </h4>

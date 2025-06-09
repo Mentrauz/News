@@ -11,17 +11,15 @@ export function HeroSection() {
   const heroStory = news.topStories[0];
   const heroHeadline = heroStory?.title || "HOW THE FBI AND BIG AG STARTED TREATING ANIMAL RIGHTS ACTIVISTS AS TERRORISTS";
   const heroAuthor = heroStory?.author || "Matt Sledge";
-  const heroImage = heroStory?.urlToImage;
   
-  // Only use Unsplash if NewsAPI doesn't provide an image
-  const shouldUseFallback = !heroImage || heroImage.includes('placeholder');
+  // Always use high-quality Unsplash images
   const { imageUrl: unsplashUrl, isLoading } = useNewsImage(
     heroHeadline, 
     "Justice", 
-    { enabled: shouldUseFallback }
+    { enabled: true, fallbackImage: '/placeholder-news.svg' }
   );
   
-  const finalImageUrl = shouldUseFallback ? unsplashUrl : heroImage;
+  const finalImageUrl = unsplashUrl;
 
   return (
     <section className="relative">
@@ -37,9 +35,9 @@ export function HeroSection() {
           priority
           sizes="100vw"
         />
-        {isLoading && shouldUseFallback && (
+        {isLoading && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
-            <div className="text-gray-500">Loading image...</div>
+            <div className="text-gray-500">Loading HD image...</div>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20">

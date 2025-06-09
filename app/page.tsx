@@ -16,15 +16,34 @@ import { useNews } from "@/hooks/use-news"
 
 // Convert NewsAPI article to the format expected by CategorySection
 function convertToLegacyFormat(articles: any[]) {
-  return articles.map((article: any, index: number) => ({
-    id: parseInt(article.id?.replace(/\D/g, '') || index.toString()),
-    title: article.title,
-    excerpt: article.description || "",
-    author: article.author,
-    image: article.urlToImage || "/placeholder-small.svg",
-    category: article.category || "General",
-    featured: article.featured || false,
-  }));
+  return articles.map((article: any, index: number) => {
+    // Clean and enhance image URL if it exists
+    let imageUrl = article.urlToImage || "/placeholder-small.svg";
+    
+    // If it's a valid image URL, try to enhance quality
+    if (imageUrl && imageUrl.startsWith('http') && !imageUrl.includes('placeholder')) {
+      // For some news sources, we can add quality parameters
+      if (imageUrl.includes('cdn.') || imageUrl.includes('img.') || imageUrl.includes('image.')) {
+        // Add high-quality parameters where possible
+        const url = new URL(imageUrl);
+        if (!url.searchParams.has('w')) url.searchParams.set('w', '600');
+        if (!url.searchParams.has('h')) url.searchParams.set('h', '400');
+        if (!url.searchParams.has('fit')) url.searchParams.set('fit', 'crop');
+        if (!url.searchParams.has('q')) url.searchParams.set('q', '85');
+        imageUrl = url.toString();
+      }
+    }
+    
+    return {
+      id: parseInt(article.id?.replace(/\D/g, '') || index.toString()),
+      title: article.title,
+      excerpt: article.description || "",
+      author: article.author,
+      image: imageUrl,
+      category: article.category || "General",
+      featured: article.featured || false,
+    };
+  });
 }
 
 export default function Home() {
