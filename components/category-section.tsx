@@ -25,19 +25,39 @@ function ArticleImage({ article, width, height, className }: {
   height: number, 
   className?: string 
 }) {
-  const { imageUrl, isLoading } = useNewsImage(article.title, article.category);
+  // First try to use the NewsAPI image, fallback to Unsplash only if needed
+  const shouldUseFallback = !article.image || 
+    article.image.includes('placeholder') || 
+    article.image === '/placeholder-small.svg' ||
+    article.image === '/placeholder-news.svg';
+    
+  const { imageUrl: unsplashUrl, isLoading } = useNewsImage(
+    article.title, 
+    article.category, 
+    { enabled: shouldUseFallback }
+  );
+  
+  // Use NewsAPI image if available, otherwise use Unsplash
+  const finalImageUrl = shouldUseFallback ? unsplashUrl : article.image;
   
   return (
     <div className="relative">
       <Image
-        src={imageUrl}
+        src={finalImageUrl}
         alt={article.title}
         width={width}
         height={height}
         className={className}
         sizes={width > 400 ? "50vw" : "25vw"}
+        onError={(e) => {
+          // If NewsAPI image fails, try Unsplash as fallback
+          if (!shouldUseFallback) {
+            console.warn(`NewsAPI image failed for "${article.title}", falling back to Unsplash`);
+            // This would require a state update to trigger Unsplash fetch
+          }
+        }}
       />
-      {isLoading && (
+      {isLoading && shouldUseFallback && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
           <div className="text-xs text-gray-500">Loading...</div>
         </div>

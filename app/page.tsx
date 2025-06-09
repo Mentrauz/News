@@ -11,6 +11,7 @@ import { CategorySection } from "@/components/category-section"
 import { Footer } from "@/components/footer"
 import { NewsletterSignup } from "@/components/newsletter-signup"
 import { LoadingScreen } from "@/components/loading-screen"
+import { DebugImageInfo } from "@/components/debug-image-info"
 import { useNews } from "@/hooks/use-news"
 
 // Convert NewsAPI article to the format expected by CategorySection
@@ -136,6 +137,7 @@ export default function Home() {
       </div>
 
       <Footer />
+      <DebugImageInfo />
     </main>
   )
 }

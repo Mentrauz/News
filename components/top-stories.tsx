@@ -5,19 +5,28 @@ import Link from "next/link"
 import { useNewsImage } from "@/hooks/use-news-images"
 import { useNews } from "@/hooks/use-news"
 
-function TopStoryImage({ headline, category, width, height, className }: {
+function TopStoryImage({ headline, category, newsApiImage, width, height, className }: {
   headline: string,
   category?: string,
+  newsApiImage?: string,
   width: number,
   height: number,
   className?: string
 }) {
-  const { imageUrl, isLoading } = useNewsImage(headline, category);
+  // Use NewsAPI image if available, fallback to Unsplash
+  const shouldUseFallback = !newsApiImage || newsApiImage.includes('placeholder');
+  const { imageUrl: unsplashUrl, isLoading } = useNewsImage(
+    headline, 
+    category, 
+    { enabled: shouldUseFallback }
+  );
+  
+  const finalImageUrl = shouldUseFallback ? unsplashUrl : newsApiImage;
   
   return (
     <div className="relative">
       <Image
-        src={imageUrl}
+        src={finalImageUrl}
         alt={headline}
         width={width}
         height={height}
@@ -25,7 +34,7 @@ function TopStoryImage({ headline, category, width, height, className }: {
         sizes={width > 400 ? "33vw" : "25vw"}
         priority={true} // Load these images with high priority since they're above the fold
       />
-      {isLoading && (
+      {isLoading && shouldUseFallback && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
           <div className="text-xs text-gray-500">Loading...</div>
         </div>
@@ -38,11 +47,16 @@ export function TopStories() {
   const { news, error } = useNews();
   
   // Use first available headlines or fallback to defaults
-  const mainHeadline = news.topStories[0]?.title || "HOW THE KOREAN RIGHT TURNED MAGA AHEAD OF TOMORROW'S ELECTION";
-  const voicesHeadline = news.topStories[1]?.title || "Marco Rubio Is Attacking American Education. International Students Are His Pawns.";
-  const mainAuthor = news.topStories[0]?.author || "Janet Lie";
-  const voicesAuthor = news.topStories[1]?.author || "Natasha Lennard";
-  const mainDescription = news.topStories[0]?.description || "As South Korea heads toward a snap presidential election on June 3, the far right is following the Trump playbook (and aesthetic).";
+  const mainStory = news.topStories[0];
+  const voicesStory = news.topStories[1];
+  
+  const mainHeadline = mainStory?.title || "HOW THE KOREAN RIGHT TURNED MAGA AHEAD OF TOMORROW'S ELECTION";
+  const voicesHeadline = voicesStory?.title || "Marco Rubio Is Attacking American Education. International Students Are His Pawns.";
+  const mainAuthor = mainStory?.author || "Janet Lie";
+  const voicesAuthor = voicesStory?.author || "Natasha Lennard";
+  const mainDescription = mainStory?.description || "As South Korea heads toward a snap presidential election on June 3, the far right is following the Trump playbook (and aesthetic).";
+  const mainImage = mainStory?.urlToImage;
+  const voicesImage = voicesStory?.urlToImage;
 
   if (error) {
     return (
@@ -68,6 +82,7 @@ export function TopStories() {
                 <TopStoryImage
                   headline={mainHeadline}
                   category="Politics"
+                  newsApiImage={mainImage}
                   width={500}
                   height={600}
                   className="w-full object-cover"
@@ -103,6 +118,7 @@ export function TopStories() {
                   <TopStoryImage
                     headline={voicesHeadline}
                     category="Voices"
+                    newsApiImage={voicesImage}
                     width={120}
                     height={80}
                     className="object-cover"
