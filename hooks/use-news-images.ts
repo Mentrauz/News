@@ -13,8 +13,9 @@ interface UseNewsImageReturn {
   refetch: () => void;
 }
 
-// Simple in-memory cache to avoid re-fetching same images
+// Lightweight cache for serverless environments
 const imageCache = new Map<string, string>();
+const MAX_CACHE_ENTRIES = 30; // Limit cache size for Vercel deployment
 
 export function useNewsImage(
   headline: string,
@@ -44,6 +45,13 @@ export function useNewsImage(
 
     try {
       const url = await fetchNewsImage(headline, category);
+      
+      // Manage cache size for Vercel deployment
+      if (imageCache.size >= MAX_CACHE_ENTRIES) {
+        const firstKey = imageCache.keys().next().value;
+        if (firstKey) imageCache.delete(firstKey);
+      }
+      
       imageCache.set(cacheKey, url);
       setImageUrl(url);
     } catch (err) {

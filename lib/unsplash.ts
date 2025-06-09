@@ -1,12 +1,19 @@
 const UNSPLASH_ACCESS_KEY = process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY;
 const UNSPLASH_BASE_URL = 'https://api.unsplash.com';
 
-// Track used images to prevent duplicates
+// Track used images to prevent duplicates (lightweight for serverless)
 const usedImages = new Set<string>();
+const MAX_CACHE_SIZE = 50; // Limit cache size for serverless environments
 
 // Validate that the API key is available
 if (!UNSPLASH_ACCESS_KEY) {
   console.warn('NEXT_PUBLIC_UNSPLASH_ACCESS_KEY is not set. Please add it to your .env.local file.');
+}
+
+// Check if running on Vercel
+const isVercel = process.env.VERCEL === '1';
+if (isVercel) {
+  console.log('🚀 Running on Vercel deployment');
 }
 
 export interface UnsplashImage {
@@ -131,16 +138,26 @@ export async function fetchNewsImage(headline: string, category?: string): Promi
     
     console.log(`🔍 Search query: "${searchQuery}"`);
     
-    const response = await fetch(
+    // Create manual timeout promise for better Vercel compatibility
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), 8000);
+    });
+    
+    const fetchPromise = fetch(
       `${UNSPLASH_BASE_URL}/search/photos?query=${encodeURIComponent(searchQuery)}&page=1&per_page=10&orientation=landscape&order_by=relevant`,
       {
         headers: {
           'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
           'Content-Type': 'application/json',
         },
-        signal: AbortSignal.timeout(10000), // 10 second timeout
+        // Use manual timeout for better Vercel Edge Runtime compatibility
+        signal: typeof AbortSignal !== 'undefined' && AbortSignal.timeout 
+          ? AbortSignal.timeout(8000) 
+          : undefined,
       }
     );
+    
+    const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
 
     console.log(`📡 Unsplash response status: ${response.status}`);
 
@@ -154,12 +171,12 @@ export async function fetchNewsImage(headline: string, category?: string): Promi
     console.log(`📸 Found ${data.results?.length || 0} images`);
     
     if (data.results && data.results.length > 0) {
-      // Filter out already used images
+      // Filter out already used images (limit cache size for serverless)
       const availableImages = data.results.filter(image => !usedImages.has(image.id));
       
-      // If all images are used, clear the cache and start fresh
-      if (availableImages.length === 0) {
-        console.log('🔄 Clearing used images cache');
+      // If all images are used or cache is too large, clear and start fresh
+      if (availableImages.length === 0 || usedImages.size > MAX_CACHE_SIZE) {
+        console.log('🔄 Clearing used images cache for serverless optimization');
         usedImages.clear();
         availableImages.push(...data.results);
       }
@@ -189,6 +206,16 @@ export async function fetchNewsImage(headline: string, category?: string): Promi
     
   } catch (error) {
     console.error('❌ Error fetching image from Unsplash:', error);
+    
+    // For Vercel deployment, provide specific error handling
+    if (error instanceof Error) {
+      if (error.message.includes('timeout') || error.message.includes('network')) {
+        console.warn('⏱️ Network timeout detected, using placeholder');
+      } else if (error.message.includes('fetch')) {
+        console.warn('🌐 Fetch error detected, possibly due to cold start');
+      }
+    }
+    
     return getCategoryPlaceholder(category);
   }
 }
