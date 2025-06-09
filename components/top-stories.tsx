@@ -24,13 +24,13 @@ function TopStoryImage({ headline, category, newsApiImage, width, height, classN
   const finalImageUrl = shouldUseFallback ? unsplashUrl : newsApiImage;
   
   return (
-    <div className="relative">
+    <div className="image-container">
       <Image
         src={finalImageUrl}
         alt={headline}
         width={width}
         height={height}
-        className={className}
+        className={`${className} news-image`}
         sizes={width > 400 ? "33vw" : "25vw"}
         priority={true} // Load these images with high priority since they're above the fold
       />
@@ -79,14 +79,16 @@ export function TopStories() {
           <article>
             <Link href="#" className="block group">
               <div className="mb-6">
-                <TopStoryImage
-                  headline={mainHeadline}
-                  category="Politics"
-                  newsApiImage={mainImage}
-                  width={500}
-                  height={600}
-                  className="w-full object-cover"
-                />
+                <div className="aspect-news-hero w-full">
+                  <TopStoryImage
+                    headline={mainHeadline}
+                    category="Politics"
+                    newsApiImage={mainImage}
+                    width={500}
+                    height={600}
+                    className="w-full h-full"
+                  />
+                </div>
               </div>
             </Link>
           </article>
@@ -115,14 +117,16 @@ export function TopStories() {
             <article className="mb-8">
               <Link href="#" className="flex gap-4 group">
                 <div className="flex-shrink-0">
-                  <TopStoryImage
-                    headline={voicesHeadline}
-                    category="Voices"
-                    newsApiImage={voicesImage}
-                    width={120}
-                    height={80}
-                    className="object-cover"
-                  />
+                  <div className="aspect-news-thumb w-[120px] h-[80px]">
+                    <TopStoryImage
+                      headline={voicesHeadline}
+                      category="Voices"
+                      newsApiImage={voicesImage}
+                      width={120}
+                      height={80}
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
                 <div>
                   <h4 className="font-bold text-lg mb-2 group-hover:text-gray-700 transition-colors">

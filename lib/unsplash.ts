@@ -190,14 +190,14 @@ export async function fetchNewsImage(headline: string, category?: string): Promi
       
       console.log(`✅ Selected image: ${selectedImage.id}`);
       
-      // Use small size for faster loading and apply our optimizations
-      const imageUrl = new URL(selectedImage.urls.small);
-      imageUrl.searchParams.set('w', '800');
-      imageUrl.searchParams.set('h', '400');
+      // Use regular size for better quality with smart cropping
+      const imageUrl = new URL(selectedImage.urls.regular);
+      imageUrl.searchParams.set('w', '1200');
+      imageUrl.searchParams.set('h', '600');
       imageUrl.searchParams.set('fit', 'crop');
-      imageUrl.searchParams.set('crop', 'entropy');
+      imageUrl.searchParams.set('crop', 'faces,entropy');
       imageUrl.searchParams.set('auto', 'format');
-      imageUrl.searchParams.set('q', '75');
+      imageUrl.searchParams.set('q', '85');
       return imageUrl.toString();
     }
     

@@ -41,13 +41,13 @@ function ArticleImage({ article, width, height, className }: {
   const finalImageUrl = shouldUseFallback ? unsplashUrl : article.image;
   
   return (
-    <div className="relative">
+    <div className="image-container">
       <Image
         src={finalImageUrl}
         alt={article.title}
         width={width}
         height={height}
-        className={className}
+        className={`${className} news-image`}
         sizes={width > 400 ? "50vw" : "25vw"}
         onError={(e) => {
           // If NewsAPI image fails, try Unsplash as fallback
@@ -80,12 +80,14 @@ export function CategorySection({ title, articles }: CategorySectionProps) {
             <article>
               <Link href="#" className="block group">
                 <div className="mb-6">
-                  <ArticleImage 
-                    article={featuredArticle}
-                    width={700}
-                    height={400}
-                    className="w-full object-cover"
-                  />
+                  <div className="aspect-news-featured w-full">
+                    <ArticleImage 
+                      article={featuredArticle}
+                      width={700}
+                      height={400}
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
                 <div className="border-t-4 border-black pt-6">
                   <h3 className="text-3xl font-bold mb-3 text-black group-hover:text-gray-700 transition-colors">
@@ -107,12 +109,14 @@ export function CategorySection({ title, articles }: CategorySectionProps) {
               <article>
                 <Link href="#" className="flex gap-4 group">
                   <div className="flex-shrink-0">
-                    <ArticleImage 
-                      article={article}
-                      width={180}
-                      height={120}
-                      className="object-cover"
-                    />
+                    <div className="aspect-news-thumb w-[180px] h-[120px]">
+                      <ArticleImage 
+                        article={article}
+                        width={180}
+                        height={120}
+                        className="w-full h-full"
+                      />
+                    </div>
                   </div>
                   <div>
                     {article.category && article.category !== title && (

@@ -30,7 +30,10 @@ export function HeroSection() {
           src={finalImageUrl}
           alt="Animal rights protesters with signs"
           fill
-          className="object-cover"
+          className="object-cover object-center"
+          style={{
+            objectPosition: 'center center'
+          }}
           priority
           sizes="100vw"
         />
