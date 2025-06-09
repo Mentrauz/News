@@ -48,6 +48,7 @@ export function useNewsImage(
       setImageUrl(url);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch image';
+      console.warn(`Image fetch failed for "${headline}":`, errorMessage);
       setError(errorMessage);
       setImageUrl(fallbackImage);
     } finally {

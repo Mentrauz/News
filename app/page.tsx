@@ -20,7 +20,7 @@ function convertToLegacyFormat(articles: any[]) {
     title: article.title,
     excerpt: article.description || "",
     author: article.author,
-    image: article.urlToImage || "/placeholder.svg?height=100&width=150",
+    image: article.urlToImage || "/placeholder-small.svg",
     category: article.category || "General",
     featured: article.featured || false,
   }));

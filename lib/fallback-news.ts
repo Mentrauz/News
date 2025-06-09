@@ -10,7 +10,7 @@ export const fallbackNews = {
       content: 'Thank you for visiting Daily Pulse. Due to high demand, we\'re temporarily showing cached content.',
       author: 'Daily Pulse Team',
       publishedAt: new Date().toISOString(),
-      urlToImage: '/placeholder.svg?height=400&width=800',
+      urlToImage: '/placeholder-news.svg',
       url: '#',
       source: {
         id: 'daily-pulse',
@@ -29,7 +29,7 @@ export const fallbackNews = {
       content: 'Daily Pulse provides comprehensive political news coverage.',
       author: 'Political Desk',
       publishedAt: new Date().toISOString(),
-      urlToImage: '/placeholder.svg?height=200&width=300',
+      urlToImage: '/placeholder-small.svg',
       url: '#',
       source: {
         id: 'daily-pulse',
@@ -48,7 +48,7 @@ export const fallbackNews = {
       content: 'Daily Pulse covers important legal developments and court proceedings.',
       author: 'Legal Correspondent',
       publishedAt: new Date().toISOString(),
-      urlToImage: '/placeholder.svg?height=200&width=300',
+      urlToImage: '/placeholder-small.svg',
       url: '#',
       source: {
         id: 'daily-pulse',
@@ -67,7 +67,7 @@ export const fallbackNews = {
       content: 'Stay informed about national security developments with Daily Pulse.',
       author: 'Security Analyst',
       publishedAt: new Date().toISOString(),
-      urlToImage: '/placeholder.svg?height=200&width=300',
+      urlToImage: '/placeholder-small.svg',
       url: '#',
       source: {
         id: 'daily-pulse',
@@ -86,7 +86,7 @@ export const fallbackNews = {
       content: 'Daily Pulse brings you the latest in technology and innovation.',
       author: 'Tech Reporter',
       publishedAt: new Date().toISOString(),
-      urlToImage: '/placeholder.svg?height=200&width=300',
+      urlToImage: '/placeholder-small.svg',
       url: '#',
       source: {
         id: 'daily-pulse',
@@ -105,7 +105,7 @@ export const fallbackNews = {
       content: 'Environmental news and climate updates from Daily Pulse.',
       author: 'Environmental Correspondent',
       publishedAt: new Date().toISOString(),
-      urlToImage: '/placeholder.svg?height=200&width=300',
+      urlToImage: '/placeholder-small.svg',
       url: '#',
       source: {
         id: 'daily-pulse',
@@ -124,7 +124,7 @@ export const fallbackNews = {
       content: 'Stay connected to world events with Daily Pulse international coverage.',
       author: 'International Desk',
       publishedAt: new Date().toISOString(),
-      urlToImage: '/placeholder.svg?height=200&width=300',
+      urlToImage: '/placeholder-small.svg',
       url: '#',
       source: {
         id: 'daily-pulse',

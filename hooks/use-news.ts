@@ -97,7 +97,7 @@ export function useNews(): UseNewsReturn {
             imagePromises.push(
               fetchNewsImage(articles[0].title, category).catch(err => {
                 console.warn(`Failed to preload image for ${category}:`, err);
-                return '/placeholder.svg'; // Return fallback on error
+                return '/placeholder-small.svg'; // Return fallback on error
               })
             );
           }

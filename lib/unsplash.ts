@@ -138,6 +138,7 @@ export async function fetchNewsImage(headline: string, category?: string): Promi
           'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`,
           'Content-Type': 'application/json',
         },
+        signal: AbortSignal.timeout(10000), // 10 second timeout
       }
     );
 
@@ -172,8 +173,15 @@ export async function fetchNewsImage(headline: string, category?: string): Promi
       
       console.log(`✅ Selected image: ${selectedImage.id}`);
       
-      // Return high-quality URL with specific dimensions for sharpness
-      return `${selectedImage.urls.regular}?w=1200&h=600&fit=crop&crop=entropy&auto=format&q=80`;
+      // Use small size for faster loading and apply our optimizations
+      const imageUrl = new URL(selectedImage.urls.small);
+      imageUrl.searchParams.set('w', '800');
+      imageUrl.searchParams.set('h', '400');
+      imageUrl.searchParams.set('fit', 'crop');
+      imageUrl.searchParams.set('crop', 'entropy');
+      imageUrl.searchParams.set('auto', 'format');
+      imageUrl.searchParams.set('q', '75');
+      return imageUrl.toString();
     }
     
     console.log('📷 No images found, using placeholder');
