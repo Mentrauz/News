@@ -103,7 +103,6 @@ function getCategoryKeywords(category: string): string {
     'Voices': ['public speaking', 'community gathering', 'town hall', 'microphone', 'peaceful assembly'],
     'Chilling Dissent': ['peaceful protest', 'civil rights', 'freedom march', 'demonstration signs', 'activism'],
     'The War on Immigrants': ['border crossing', 'immigration office', 'family separation', 'detention center', 'citizenship ceremony'],
-    "Israel's War on Gaza": ['middle east conflict', 'peace negotiation', 'humanitarian aid', 'diplomatic meeting', 'ceasefire']
   };
   
   const keywords = categoryMap[category] || ['breaking news', 'journalism', 'press conference'];

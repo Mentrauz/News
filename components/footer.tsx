@@ -20,9 +20,9 @@ export function Footer() {
               <h3 className="text-sm font-bold uppercase mb-4 tracking-wide">ABOUT</h3>
               <ul className="space-y-3">
                 <li>
-                  <Link href="#" className="text-sm text-gray-600 hover:text-black transition-colors">
+                  {/* <Link href="#" className="text-sm text-gray-600 hover:text-black transition-colors">
                     SUPPORT US
-                  </Link>
+                  </Link> */}
                 </li>
                 <li>
                   <Link href="#" className="text-sm text-gray-600 hover:text-black transition-colors">

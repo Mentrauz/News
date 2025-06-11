@@ -4,12 +4,11 @@ export function NavigationMenu() {
   const menuItems = [
     { label: "POLITICS", href: "/politics" },
     { label: "JUSTICE", href: "/justice" },
-    { label: "WAR ON GAZA", href: "/war-on-gaza" },
     { label: "TECHNOLOGY", href: "/technology" },
     { label: "IMMIGRATION", href: "/immigration" },
     { label: "CHILLING DISSENT", href: "/chilling-dissent" },
     { label: "ABOUT", href: "/about" },
-    { label: "SUPPORT US", href: "/support-us", highlight: true },
+ // { label: "SUPPORT US", href: "/support-us", highlight: true },
   ]
 
   return (
