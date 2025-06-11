@@ -8,7 +8,7 @@ export function NavigationMenu() {
     { label: "IMMIGRATION", href: "/immigration" },
     { label: "CHILLING DISSENT", href: "/chilling-dissent" },
     { label: "ABOUT", href: "/about" },
- // { label: "SUPPORT US", href: "/support-us", highlight: true },
+    { label: "SUPPORT US", href: "/support-us", highlight: true },
   ]
 
   return (
