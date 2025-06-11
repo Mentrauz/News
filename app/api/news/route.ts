@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getHomepageNews } from '@/lib/newsapi';
 import { fallbackNews } from '@/lib/fallback-news';
 
-// Enable edge runtime for better performance on Vercel
-export const runtime = 'edge';
+// Use Node.js runtime for proper environment variable support
+// export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   try {

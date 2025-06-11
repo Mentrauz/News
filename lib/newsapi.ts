@@ -3,7 +3,8 @@ const NEWS_API_BASE_URL = 'https://newsapi.org/v2';
 
 // Validate API key is available
 if (!NEWS_API_KEY) {
-  throw new Error('NEWSAPI_KEY environment variable is not set');
+  console.error('NEWSAPI_KEY environment variable is not set');
+  // Don't throw error immediately, let functions handle gracefully
 }
 
 // Enhanced cache to work better with serverless environments
@@ -139,6 +140,12 @@ export async function fetchTopHeadlines(
   country: string = 'us',
   pageSize: number = 20
 ): Promise<NewsArticle[]> {
+  // Check if API key is available
+  if (!NEWS_API_KEY) {
+    console.error('NEWSAPI_KEY not available, returning empty array');
+    return [];
+  }
+
   // Check cache first
   const cacheKey = `headlines_${category}_${country}_${pageSize}`;
   const cachedData = getCachedData(cacheKey);
@@ -196,6 +203,12 @@ export async function searchNews(
   pageSize: number = 20,
   language: string = 'en'
 ): Promise<NewsArticle[]> {
+  // Check if API key is available
+  if (!NEWS_API_KEY) {
+    console.error('NEWSAPI_KEY not available, returning empty array');
+    return [];
+  }
+
   // Check cache first
   const cacheKey = `search_${query}_${sortBy}_${pageSize}`;
   const cachedData = getCachedData(cacheKey);
