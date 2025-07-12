@@ -1,6 +1,6 @@
 {
-  "name": "my-v0-project",
-  "version": "0.1.0",
+  "name": "News World",
+  "version": "0.5.1b",
   "private": true,
   "scripts": {
     "dev": "next dev",
